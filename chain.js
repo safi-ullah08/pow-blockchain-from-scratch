@@ -20,12 +20,15 @@ module.exports = class Blockchain {
   }
 
   generateGensisBlock() {
-    let transaction = new Transaction("", MINTING_PUBLIC_KEY, 10000000, 0);
-    let wallet = new Wallet(MINTING_KEY, MINTING_PUBLIC_KEY);
-    let sig = wallet.sign(transaction.hash);
-    transaction.signTransaction(sig);
-    let block = new Block(Date.now(), [transaction], "");
-    return block;
+    if (!this.chain) {
+      let transaction = new Transaction("", MINTING_PUBLIC_KEY, 10000000, 0);
+      let wallet = new Wallet(MINTING_KEY, MINTING_PUBLIC_KEY);
+      let sig = wallet.sign(transaction.hash);
+      transaction.signTransaction(sig);
+      let block = new Block(Date.now(), [transaction], "");
+      return block;
+    }
+    return null;
   }
 
   getLatestBlock() {
@@ -37,16 +40,6 @@ module.exports = class Blockchain {
       this.pendingTransactions.push(transaction);
     } else {
       throw new Error("Invlaid Transaction!!");
-    }
-  }
-
-  addMintingTransaction(transaction) {
-    if (
-      transaction.from === MINTING_PUBLIC_KEY &&
-      transaction.to === MINTING_PUBLIC_KEY &&
-      this.chain == undefined
-    ) {
-      this.pendingTransactions.push(transaction);
     }
   }
 
